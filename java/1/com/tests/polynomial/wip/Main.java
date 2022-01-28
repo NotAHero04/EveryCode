@@ -21,9 +21,9 @@ public class Main {
     }
     scanner.close();
     double[][] series = Polynomial.getSeries(deg, points);
-    Utility.print(series);
+    // Utility.print(series);
     series = Utility.fullProcess(series);
-    Utility.print(series);
+    // Utility.print(series);
     for (int i = 0; i < series.length; i++) {
       if (i == 0) {
         System.out.print(series[series.length - 1 - i][series.length]);
