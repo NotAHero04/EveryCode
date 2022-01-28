@@ -21,12 +21,14 @@ public class Main {
     }
     scanner.close();
     double[][] series = Polynomial.getSeries(deg, points);
+    Utility.print(series);
     series = Utility.fullProcess(series);
+    Utility.print(series);
     for (int i = 0; i < series.length; i++) {
       if (i == 0) {
-        System.out.print(series[i][series.length]);
+        System.out.print(series[series.length - 1 - i][series.length]);
       } else {
-        System.out.print(Math.abs(series[i][series.length]));
+        System.out.print(Math.abs(series[series.length - 1 - i][series.length]));
       }
       if (i != 0) {
         System.out.print("x");
@@ -35,7 +37,7 @@ public class Main {
         System.out.print("^" + i);
       }
       if (i != series.length - 1) {
-        if (series[i + 1][series.length] < 0) {
+        if (series[i][series.length] < 0) {
           System.out.print("-");
         } else {
           System.out.print("+");
