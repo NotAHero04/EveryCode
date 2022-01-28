@@ -114,13 +114,13 @@ public class Utility {
     return reduce(revProcess(process(series)));
   }
 
-  public static void main(String[] args) {
-    double[][] test = {{0, 1, 2}, {3, 1, 5}};
-    print(test);
-    System.out.println();
-    test = revProcess(process(test));
-    test = reduce(test);
-    print(test);
-  }
+  // public static void main(String[] args) {
+  //  double[][] test = {{0, 1, 2}, {3, 1, 5}};
+  //  print(test);
+  //  System.out.println();
+  //  test = revProcess(process(test));
+  //  test = reduce(test);
+  //  print(test);
+  // }
   // you can re-enable this test if you want
 }
