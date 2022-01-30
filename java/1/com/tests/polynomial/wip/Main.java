@@ -5,9 +5,12 @@ import java.util.*;
 public class Main {
 
   public static void main(String[] args) throws InputMismatchException {
+    int deg = 0;
     Scanner scanner = new Scanner(System.in);
     System.out.print("Degree? ");
-    int deg = scanner.nextInt();
+    if (scanner.hasNextInt()) {
+      deg = scanner.nextInt();
+    }
     if (deg <= 0) {
       scanner.close();
       throw new InputMismatchException();
@@ -22,6 +25,7 @@ public class Main {
     scanner.close();
     double[][] series = Polynomial.getSeries(deg, points);
     // Utility.print(series);
+    // System.out.println();
     series = Utility.fullProcess(series);
     // Utility.print(series);
     for (int i = 0; i < series.length; i++) {
