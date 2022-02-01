@@ -66,7 +66,7 @@ public class Main {
     return (int) Math.floor(JdNew + 0.5 + timeZone / 24);
   }
 
-  static int getSunLongitude(int julius, int timeZone) {
+  static double getSunLongitude(int julius, int timeZone) {
     double T =
         (julius - 2451545.5 - timeZone / 24)
             / 36525; // Time in Julian centuries from 2000-01-01 12:00:00 GMT
@@ -80,14 +80,14 @@ public class Main {
     double L = L0 + DL; // true longitude, degree
     L = L * dr;
     L = L - PI * 2 * (Math.floor(L / (PI * 2))); // Normalize to (0, 2*PI)
-    return (int) Math.floor(L / PI * 6);
+    return L / PI * 6;
   }
 
   static int getLunarMonth11(int year, int timeZone) {
     int off = dayToJulius(31, 12, year) - 2415021;
     int k = (int) Math.floor(off / 29.530588853);
     int nm = getNewMoonDay(k, timeZone);
-    int sunLong = getSunLongitude(nm, timeZone); // sun longitude at local midnight
+    double sunLong = getSunLongitude(nm, timeZone); // sun longitude at local midnight
     if (sunLong >= 9) {
       nm = getNewMoonDay(k - 1, timeZone); // can be further optimized
     }
@@ -96,9 +96,9 @@ public class Main {
 
   static int getLeapMonthOffset(int a11, int timeZone) {
     int k = (int) Math.floor((a11 - 2415021.076998695) / 29.530588853 + 0.5);
-    int last = 0;
+    double last = 0;
     int i = 1; // We start with the month following lunar month 11
-    int arc = getSunLongitude(getNewMoonDay(k + i, timeZone), timeZone);
+    double arc = getSunLongitude(getNewMoonDay(k + i, timeZone), timeZone);
     do {
       last = arc;
       i++;
@@ -108,49 +108,52 @@ public class Main {
   }
 
   static int[] solarToLunar(int day, int month, int year, int timeZone) {
-  int dayNumber = dayToJulius(day, month, year);
+    int dayNumber = dayToJulius(day, month, year);
     int k = (int) Math.floor((dayNumber - 2415021.076998695) / 29.530588853);
-int monthStart = getNewMoonDay(k+1, timeZone);
-if (monthStart > dayNumber) {
-monthStart = getNewMoonDay(k, timeZone);
-}
-int a11 = getLunarMonth11(year, timeZone);
-int b11 = a11;
-int lunarYear;
-if (a11 >= monthStart) {
-lunarYear = year;
-a11 = getLunarMonth11(year-1, timeZone);
-} else {
-lunarYear = year+1;
-b11 = getLunarMonth11(year+1, timeZone);
-}
-int lunarDay = dayNumber-monthStart+1;
-int diff = (int) Math.floor((monthStart - a11)/29);
-int lunarLeap = 0;
-int lunarMonth = diff+11;
-if (b11 - a11 > 365) {
-int leapMonthDiff = getLeapMonthOffset(a11, timeZone);
-if (diff >= leapMonthDiff) {
-lunarMonth = diff + 10;
-if (diff == leapMonthDiff) {
-lunarLeap = 1;
-}
-}
-}
-if (lunarMonth > 12) {
-lunarMonth = lunarMonth - 12;
-}
-if (lunarMonth >= 11 && diff < 4) {
-lunarYear -= 1;
-}
-int[] ret = {lunarDay, lunarMonth, lunarYear};
-return ret;
+    int monthStart = getNewMoonDay(k+1, timeZone);
+    if (monthStart > dayNumber) {
+      monthStart = getNewMoonDay(k, timeZone);
+    }
+    int a11 = getLunarMonth11(year, timeZone);
+    int b11 = a11;
+    int lunarYear;
+    if (a11 >= monthStart) {
+      lunarYear = year;
+      a11 = getLunarMonth11(year - 1, timeZone);
+    } else {
+      lunarYear = year+1;
+      b11 = getLunarMonth11(year + 1, timeZone);
+    }
+    int lunarDay = dayNumber - monthStart + 1;
+    int diff = (int) Math.floor((monthStart - a11) / 29);
+    int lunarLeap = 0;
+    int lunarMonth = diff + 11;
+    if (b11 - a11 > 365) {
+      int leapMonthDiff = getLeapMonthOffset(a11, timeZone);
+      if (diff >= leapMonthDiff) {
+        lunarMonth = diff + 10;
+        if (diff == leapMonthDiff) {
+          lunarLeap = 1;
+        }
+      }
+    }
+    if (lunarMonth > 12) {
+      lunarMonth = lunarMonth - 12;
+    }
+    if (lunarMonth >= 11 && diff < 4) {
+      lunarYear -= 1;
+    }
+    int[] ret = {lunarDay, lunarMonth, lunarYear, lunarLeap};
+    return ret;
   }
   public static void main(String[] args) {
-    int[] lunar = solarToLunar(1, 2, 2022, 0);
-    System.out.println(lunar[0]);
-    System.out.println(lunar[1]);
-    System.out.println(lunar[2]);
+    int[] lunar = solarToLunar(31, 1, 2022, 7);
+    for (int i = 0; i < lunar.length - 1; i++) {
+      System.out.print(lunar[i] + " ");
+      if (lunar[lunar.length - 1] == 1) {
+        System.out.println("(leap)");
+      }
+    }
     
   }
 }
